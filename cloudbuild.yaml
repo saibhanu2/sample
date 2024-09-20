@@ -24,3 +24,5 @@ steps:
       - '540s'  # Adjust the timeout as per requirements
       - '--memory'
       - '512MB'  # Adjust memory allocation as needed
+options:
+  logging: CLOUD_LOGGING_ONLY
