@@ -1,0 +1,34 @@
+steps:
+  # Step 1: Use Python image to install dependencies if requirements.txt exists
+  - name: 'python:3.10'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -ex
+        if [ -f requirements.txt ]; then
+          pip install -r requirements.txt
+        fi
+ 
+  # Step 2: Deploy the Cloud Function
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -ex
+        gcloud functions deploy gs_to_bq_function \
+          --project $_PROJECT_ID \
+          --runtime python310 \
+          --trigger-http \
+          --entry-point main \
+          --region $_REGION \
+          --no-gen2 \
+          --source .
+ 
+options:
+  logging: CLOUD_LOGGING_ONLY
+ 
+substitutions:
+  _PROJECT_ID: 'your-project-id'  # Replace with your actual GCP Project ID
+  _REGION: 'your-region'  # Replace with your desired deployment region
