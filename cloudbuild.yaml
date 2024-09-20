@@ -1,16 +1,26 @@
 steps:
-  # Step 1: Install Python dependencies
-  - name: 'python:3.10'
-    entrypoint: 'bash'
+  # Step 1: Set up Python environment (optional for local testing)
+  - name: 'python:3.9'
+    id: 'Install Dependencies'
+    entrypoint: 'pip'
+    args: ['install', '-r', 'requirements.txt']
+    # Only required if you want to run tests before deployment or prepare the environment locally.
+
+  # Step 2: Deploy the Cloud Function
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: 'Deploy to Cloud Functions'
     args:
-      - '-c'
-      - |
-        pip install -r requirements.txt
-
-  # Step 2: Run the Python script
-  - name: 'python:3.10'
-    entrypoint: 'python'
-    args: 
-      - 'gs_to_bq.py'
-
-timeout: '1200s'
+      - 'functions'
+      - 'deploy'
+      - 'gs_to_bq_function'  # Name of the Cloud Function
+      - '--runtime'
+      - 'python39'  # Adjust the Python version as needed
+      - '--trigger-http'  # This function will be HTTP-triggered
+      - '--entry-point'
+      - 'main'  # Entry point function in gs_to_bq.py
+      - '--source'
+      - '.'
+      - '--timeout'
+      - '540s'  # Adjust the timeout as per requirements
+      - '--memory'
+      - '512MB'  # Adjust memory allocation as needed
