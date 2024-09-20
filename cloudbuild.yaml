@@ -1,6 +1,6 @@
 steps:
   # Step 1: Use Python image to install dependencies if requirements.txt exists
-  - name: 'python:3.10'
+  - name: 'python:3.11'
     entrypoint: 'bash'
     args:
       - '-c'
